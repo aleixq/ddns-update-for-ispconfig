@@ -1,9 +1,12 @@
 <?php
 require_once('log.inc.php');
+//user
+$username = 'hackme';
+$password= 'hackme';
 
 // ISPConfig URL for REMOTE API
-$soap_location = 'https://10.0.0.251:8080/remote/index.php';
-$soap_uri = 'https://10.0.0.251:8080/remote/';
+$soap_location = 'https:/hackme:8080/remote/index.php';
+$soap_uri = 'https://hackme:8080/remote/';
 
 // Exception List
 $exception = array('example.com','example2.com.');
@@ -98,8 +101,10 @@ if ($_SERVER['REQUEST_METHOD'] != 'GET') {
 }
 
 $dnszone=substr($_GET["hostname"], $firstdotpos+1);
+$recordentry=substr($_GET["hostname"],0, $firstdotpos);
 // . '.';
 $log->debug("DNS Zone: " . $dnszone);
+$log->debug("Looking for record: " . $recordentry);
 
 $client = new SoapClient(null, array('location' => $soap_location,
 		'uri'      => $soap_uri,
@@ -129,9 +134,9 @@ try {
 		$log->debug("DNS Zone found");
 	
 		//* Get the dns record
-		$log->debug("Record Content");
+		$log->debug("Record Content for ". $_GET["hostname"]");
 		// TODO: if IPv4 use dns_a_get, if ipv6 use dns_aaaa_get
-		$dns_record = $client->dns_a_get($session_id, array('name' => $_GET["hostname"]));
+		$dns_record = $client->dns_a_get($session_id, array('name' => $recordentry));
 		// var_dump($dns_record);
 		$log->debug("End content");
 		// check if record is A IPv4 (not cname, mx, txt, ...)
